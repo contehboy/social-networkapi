@@ -7,6 +7,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //ADD routes
+app.use(require("./route/index"));
 
 mongoose.connect("mongodb://localhost:27017/socialnetwork");
 

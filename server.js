@@ -1,5 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const db = require("./config/connection");
+const userRoutes = require("./route/api/userroute");
 
 const app = express();
 
@@ -7,10 +9,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //ADD routes
-app.use(require("./route/index"));
+app.use("/api/users", userRoutes);
 
-mongoose.connect("mongodb://localhost:27017/socialnetwork");
-
-mongoose.set("debug", true);
-
-app.listen(3000, () => console.log("connected to port 3000"));
+db.once("open", () => {
+  app.listen(3000, () => {
+    console.log(`API server running on port 3000!`);
+  });
+});

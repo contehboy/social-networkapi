@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Thought = require("../models/thought");
 
 const UserController = {
   // create user
@@ -56,7 +57,11 @@ const UserController = {
             .status(404)
             .json({ message: "User doesn't exist with this id" });
         }
-        res.json(dbres);
+        return Thought.deleteMany({ id: { $in: dbres.thought } }).then(
+          (dbData) => {
+            res.json({ message: "User and thoughts deleted" });
+          }
+        );
       })
       .catch((err) => console.log(err));
   },

@@ -52,6 +52,45 @@ const ThoughtController = {
       })
       .catch((err) => console.log(err));
   },
+  addReaction({ params, body }, res) {
+    Thought.findOneAndUpdate(
+      { _id: params.id },
+      { $addToSet: { reactions: body } },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
+      .then((dbres) => {
+        if (!dbres) {
+          return res
+            .status(404)
+            .json({ message: "Thought doesn't exist with this id" });
+        }
+        res.json(dbres);
+      })
+      .catch((err) => console.log(err));
+  },
+
+  removeReaction({ params }, res) {
+    Thought.findOneAndUpdate(
+      { _id: params.id },
+      { $pull: { reactions: { _id: params.reactionId } } },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
+      .then((dbres) => {
+        if (!dbres) {
+          return res
+            .status(404)
+            .json({ message: "Thought doesn't exist with this id" });
+        }
+        res.json(dbres);
+      })
+      .catch((err) => console.log(err));
+  },
 };
 
 module.exports = ThoughtController;

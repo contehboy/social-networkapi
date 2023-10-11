@@ -10,10 +10,13 @@ const UserController = {
 
   getAll(req, res) {
     User.find({})
-      .populate({
-        path: "friends",
-        select: "-__v",
-      })
+      .populate([
+        {
+          path: "friends",
+          select: "-__v",
+        },
+        "thought",
+      ])
       .then((dbres) => res.json(dbres))
       .catch((err) => console.log(err));
   },

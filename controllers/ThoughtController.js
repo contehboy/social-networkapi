@@ -1,9 +1,28 @@
+const User = require("../models/User");
 const Thought = require("../models/thought");
 
 const ThoughtController = {
   createThought({ body }, res) {
     Thought.create(body)
-      .then((dbres) => res.json(dbres))
+      .then(({ _id }) => {
+        return User.findOneAndUpdate(
+          {
+            username: body.username,
+          },
+          {
+            $push: { thought: _id },
+          },
+          {
+            new: true,
+          }
+        );
+      })
+      .then((dbRes) => {
+        if (!dbRes) {
+          return res.status(500).message("Thought created but no user id");
+        }
+        res.json(dbRes);
+      })
       .catch((err) => console.log(err));
   },
 
@@ -48,8 +67,23 @@ const ThoughtController = {
             .status(404)
             .json({ message: "Thought doesn't exist with this id" });
         }
-        res.json(dbres);
+        User.findOneAndUpdate(
+          { thought: params.id },
+          { $pull: { thought: params.id } },
+          {
+            new: true,
+            runValidators: true,
+          }
+        ).then((dbUserres) => {
+          if (!dbUserres) {
+            return res
+              .status(404)
+              .json({ message: "User doesn't exist with this id" });
+          }
+          res.json({ dbUserres });
+        });
       })
+
       .catch((err) => console.log(err));
   },
   addReaction({ params, body }, res) {

@@ -20,6 +20,12 @@ const UserSchema = new Schema(
         ref: "User",
       },
     ],
+    thought: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Thought",
+      },
+    ],
   },
   {
     toJSON: {

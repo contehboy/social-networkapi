@@ -1,5 +1,7 @@
+const moment = require("moment/moment");
 const User = require("../models/User");
 const Thought = require("../models/thought");
+const dateformat = require("../utils/dateFormat");
 
 const ThoughtController = {
   createThought({ body }, res) {
@@ -19,7 +21,9 @@ const ThoughtController = {
       })
       .then((dbRes) => {
         if (!dbRes) {
-          return res.status(500).message("Thought created but no user id");
+          return res
+            .status(500)
+            .json({ message: "Thought created but no user id" });
         }
         res.json(dbRes);
       })
@@ -28,7 +32,13 @@ const ThoughtController = {
 
   getAll(req, res) {
     Thought.find({})
-      .then((dbres) => res.json(dbres))
+      .then((dbres) => {
+        var formattedData = dbres.map((element) => {
+          var formattedDate = dateformat(element.createdAt);
+          return { ...element._doc, createdAt: formattedDate };
+        });
+        res.json(formattedData);
+      })
       .catch((err) => console.log(err));
   },
 
